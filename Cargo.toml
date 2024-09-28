@@ -1,0 +1,20 @@
+[package]
+name = "penumbrainfo"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.70.0"
+
+[dependencies]
+axum = "0.7.6"
+chrono = "0.4.38"
+clap = "4.5.18"
+serde = { version = "1.0.210", features = ["derive"] }
+serde_json = "1.0.128"
+tokio = { version = "1", features = ["rt-multi-thread"] }
+tokio-retry = "0.3.0"
+tracing = "0.1.40"
+tracing-subscriber = "0.3.18"
+penumbra-proto = { git = "https://github.com/penumbra-zone/penumbra", tag = "v0.80.5", features = [
+    "box-grpc",
+    "rpc",
+] }
