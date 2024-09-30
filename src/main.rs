@@ -1,8 +1,9 @@
+use anyhow::anyhow;
 use chrono::Utc;
 use std::sync::LazyLock;
 use std::{collections::HashMap, sync::Arc};
-use tokio::join;
 use tokio::sync::Mutex;
+use tokio::task::JoinHandle;
 use tracing_subscriber;
 
 mod accounting;
@@ -15,25 +16,36 @@ pub static TOTAL_SUPPLY: LazyLock<Cache<u128>> = LazyLock::new(|| Arc::new(Mutex
 pub static LOCKED_BALANCES: LazyLock<Cache<HashMap<String, u128>>> =
     LazyLock::new(|| Arc::new(Mutex::new(HashMap::new())));
 
-pub static POLLING_PERIOD: u64 = 60000;
+pub static POLLING_PERIOD: u64 = 10;
 pub static FAILED_QUERY_RETRIES: u64 = 3;
 
 pub static GRPC_ENDPOINTS: [&str; 1] = ["http://localhost:50051"];
 
 #[tokio::main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt::init();
     init_static_balances().await;
 
-    let server_task = tokio::spawn(async move {
-        server::listen("0.0.0.0:3000".parse().unwrap()).await;
+    let server_task: JoinHandle<anyhow::Result<()>> = tokio::spawn(async move {
+        server::listen("0.0.0.0:3000".parse()?).await;
+        Ok(())
     });
 
-    let poll_task = tokio::spawn(async move {
-        poll::poll_total_supply().await.unwrap();
+    let args = std::env::args().into_iter().collect::<Vec<_>>();
+    let db_url = args
+        .get(1)
+        .ok_or(anyhow!("expected <DB_URL> as first argument"))?
+        .clone();
+
+    let poll_task: JoinHandle<anyhow::Result<()>> = tokio::spawn(async move {
+        poll::poll_total_supply(db_url.as_str()).await?;
+        Ok(())
     });
 
-    let _ = join!(poll_task, server_task);
+    poll_task.await??;
+    server_task.await??;
+
+    Ok(())
 }
 
 //Remove this one we move to static balances
