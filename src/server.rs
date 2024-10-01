@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
-use tracing::{error, info, warn};
+use tracing::info;
 
 use crate::{LOCKED_BALANCES, TOTAL_SUPPLY};
 
@@ -46,7 +46,7 @@ pub struct TotalSupplyResponse {
 pub async fn get_total_supply() -> impl IntoResponse {
     let total_supply = TOTAL_SUPPLY.lock().await.clone();
     let response = TotalSupplyResponse {
-        total_supply: total_supply,
+        total_supply,
     };
 
     Response::new(serde_json::to_string(&response).unwrap())
