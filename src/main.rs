@@ -68,6 +68,6 @@ async fn init_static_balances() {
     let mut locked_balances = LOCKED_BALANCES.lock().await;
     locked_balances.insert(
         "INVESTOR_LOCKED_SUPPLY".to_string(),
-        accounting::investor_locked_supply(Utc::now()),
+        accounting::total_locked_supply(Utc::now()),
     );
 }
