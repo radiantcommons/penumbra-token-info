@@ -15,25 +15,25 @@ pub async fn poll_total_supply(db_url: &str) -> anyhow::Result<()> {
             r#"
 SELECT COALESCE((staked_um + unstaked_um + auction + dex)::BIGINT, 0) as total
 FROM (
-  SELECT SUM(um) as staked_um
-  FROM (
-    SELECT * 
+    SELECT SUM(um) as staked_um
+    FROM (
+    SELECT *
     FROM supply_validators
-  ) validators
-  LEFT JOIN LATERAL (
-    SELECT um  
+    ) validators
+    LEFT JOIN LATERAL (
+    SELECT um
     FROM supply_total_staked
-    WHERE validator_id = id 
-    ORDER BY height DESC 
+    WHERE validator_id = id
+    ORDER BY height DESC
     LIMIT 1
-  ) ON TRUE
+    ) staked_lateral ON TRUE
 ) staked
 LEFT JOIN LATERAL (
-  SELECT um as unstaked_um, auction, dex 
-  FROM supply_total_unstaked
-  ORDER BY height DESC
-  LIMIT 1
-) on TRUE
+    SELECT um as unstaked_um, auction, dex
+    FROM supply_total_unstaked
+    ORDER BY height DESC
+    LIMIT 1
+) unstaked_lateral ON TRUE
         "#,
         )
         .fetch_one(&pool)

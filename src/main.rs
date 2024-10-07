@@ -27,7 +27,7 @@ async fn main() -> anyhow::Result<()> {
     init_static_balances().await;
 
     let server_task: JoinHandle<anyhow::Result<()>> = tokio::spawn(async move {
-        server::listen("0.0.0.0:3000".parse()?).await;
+        server::listen("0.0.0.0:5000".parse()?).await;
         Ok(())
     });
 
