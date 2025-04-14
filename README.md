@@ -1,6 +1,6 @@
 # Penumbra Token Info
 
-A service that tracks and provides real-time information about Penumbra's token supply metrics.
+A robust service that tracks and provides real-time information about Penumbra's token supply metrics.
 
 ## Overview
 
