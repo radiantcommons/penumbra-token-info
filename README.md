@@ -1,6 +1,6 @@
 # Penumbra Token Info
 
-A robust service that tracks and provides real-time information about Penumbra's token supply metrics.
+A service that tracks and provides real-time information about Penumbra's token supply metrics.
 
 ## Overview
 
@@ -74,15 +74,15 @@ The service tracks the following static balances that are subtracted from the to
 - Penumbra Labs: 100,000,000 tokens
 - Radiant: 100,000,000 tokens
 - Numographica: 100,000,000 tokens
-- Investor locked supply: Computed based on genesis values (TOTAL_LOCKED_GENESIS_SUPPLY + COMMUNITY_POOL_GENESIS_SUPPLY)
+- Investor locked supply: Computed based on genesis values
 
 ### Data Flow
 
 1. The service polls the PostgreSQL database every 10 seconds
 2. The SQL query aggregates data from:
-   - Staked validator tokens (`supply_validators` and `supply_total_staked` tables)
-   - Unstaked tokens (`supply_total_unstaked` table)
-   - Auction tokens 
+   - Staked validator tokens
+   - Unstaked tokens
+   - Auction tokens
    - DEX tokens
 3. API endpoints calculate total and circulating supply based on the latest data
 
@@ -98,12 +98,8 @@ The service relies on the following database tables:
 The service is built using:
 - **Axum**: Web framework for the HTTP API
 - **sqlx**: PostgreSQL database connectivity
-- **Tokio**: Async runtime and concurrency
-- **tracing**: Logging functionality
-- **serde/serde_json**: Serialization for API responses
+- **Tokio**: Async runtime
 - **Penumbra Proto**: Penumbra protocol definitions
-- **chrono**: Date and time handling for investor token unlocks
 
-## License
 
 This project is part of the Penumbra ecosystem.
